@@ -1,0 +1,11 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/LawSoft.Ioc/bin
+/LawSoft.Ioc/obj
+/.vs/LawSoft.Ioc/v14
+/LawSoft.Ioc/.vs
+/LawSoft.Ioc.Test/bin
+/LawSoft.Ioc.Test/obj
+/TestResults
