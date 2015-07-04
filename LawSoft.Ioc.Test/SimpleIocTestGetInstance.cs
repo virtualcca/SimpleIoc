@@ -53,6 +53,32 @@ namespace LawSoft.Ioc.Test
             Assert.IsNotNull(instance);
         }
 
+        [TestMethod]
+        [TestCategory("GetInstance")]
+        public void TestGetInstanceWithoutRegister()
+        {
+            SimpleIoc.Default.Reset();
+            SimpleIoc.Default.Register<ITestClassParent, TestClassParent>();
+            SimpleIoc.Default.Register<ITestClassDerived1, TestClassDerived1>();
+            var instance = SimpleIoc.Default.GetInstanceWithoutRegister<TestClassComplexCtor>();
+            Assert.IsNotNull(instance);
+            Assert.IsFalse(SimpleIoc.Default.IsRegistered<TestClassComplexCtor>());
+            Assert.IsFalse(SimpleIoc.Default.ContainsCreated<TestClassComplexCtor>());
+        }
+
+        [TestMethod]
+        [TestCategory("GetInstance")]
+        public void TestGetInstanceWithoutRegisterUsingType()
+        {
+            SimpleIoc.Default.Reset();
+            SimpleIoc.Default.Register<ITestClassParent, TestClassParent>();
+            SimpleIoc.Default.Register<ITestClassDerived1, TestClassDerived1>();
+            var instance = SimpleIoc.Default.GetInstanceWithoutRegister(typeof(TestClassComplexCtor));
+            Assert.IsNotNull(instance);
+            Assert.IsFalse(SimpleIoc.Default.IsRegistered<TestClassComplexCtor>());
+            Assert.IsFalse(SimpleIoc.Default.ContainsCreated<TestClassComplexCtor>());
+        }
+
         void InitialData()
         {
             SimpleIoc.Default.Register<ITestClassParent, TestClassParent>()

@@ -86,6 +86,22 @@ namespace LawSoft.Ioc.Interface
             where TClass : class, TInterface
             where TInterface : class;
 
+        /// <summary>
+        /// Registers a given type for a given interface.
+        /// </summary>
+        /// <typeparam name="TInterface">The interface for which instances will be resolved.</typeparam>
+        /// <param name="classType">The type that must be inhert TInterface</param>
+        ISimpleIoc Register<TInterface>(Type classType) where TInterface : class;
+
+        /// <summary>
+        /// Registers a given type for a given interface with the possibility for immediate
+        /// creation of the instance.
+        /// </summary>
+        /// <typeparam name="TInterface">The interface for which instances will be resolved.</typeparam>
+        /// <param name="classType">The type that must be inhert TInterface</param>
+        /// <param name="createInstanceImmediately">If true, forces the creation of the default
+        /// instance of the provided class.</param>
+        ISimpleIoc Register<TInterface>(Type classType, bool createInstanceImmediately) where TInterface : class;
         #endregion
 
         #region [ Unregister ]
@@ -95,7 +111,7 @@ namespace LawSoft.Ioc.Interface
         /// </summary>
         /// <typeparam name="TClass">The class that must be removed.</typeparam>
         void Unregister<TClass>()
-            where TClass : class; 
+            where TClass : class;
         #endregion
 
         #region [ GetInstance ]
@@ -122,9 +138,21 @@ namespace LawSoft.Ioc.Interface
         /// Looks up an object within the container based on the runtime name of the Type
         /// </summary>
         /// <param name="typeName">The namer of the contract to lookup</param>
-        /// <returns>An instance of TContract or null if not found</returns>
+        /// <returns>An instance of the given type.</returns>
         object GetInstance(string typeName);
 
+        /// <summary>
+        /// Make an object within the container without register, based on the runtime Type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>An instance of the given type.</returns>
+        T GetInstanceWithoutRegister<T>() where T : class;
+
+        /// <summary>
+        /// Make an object within the container without register, based on the runtime Type
+        /// </summary>
+        /// <returns>An instance of the given type.</returns>
+        object GetInstanceWithoutRegister(Type serviceType);
         #endregion
 
         #region [ GetAllInstances ]

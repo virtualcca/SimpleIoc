@@ -26,7 +26,7 @@ namespace LawSoft.Ioc
                     _default = new SimpleIoc();
                 return _default;
             }
-        } 
+        }
         #endregion
 
 
@@ -172,10 +172,36 @@ namespace LawSoft.Ioc
             where TClass : class, TInterface
             where TInterface : class
         {
+            var classType = typeof(TClass);
+
+            return Register<TInterface>(classType, createInstanceImmediately);
+        }
+
+        /// <summary>
+        /// Registers a given type for a given interface.
+        /// </summary>
+        /// <typeparam name="TInterface">The interface for which instances will be resolved.</typeparam>
+        /// <param name="classType">The type that must be inhert TInterface</param>
+        public ISimpleIoc Register<TInterface>(Type classType) where TInterface : class
+        {
+            return Register<TInterface>(classType, false);
+        }
+
+        /// <summary>
+        /// Registers a given type for a given interface with the possibility for immediate
+        /// creation of the instance.
+        /// </summary>
+        /// <typeparam name="TInterface">The interface for which instances will be resolved.</typeparam>
+        /// <param name="classType">The type that must be inhert TInterface</param>
+        /// <param name="createInstanceImmediately">If true, forces the creation of the default
+        /// instance of the provided class.</param>
+        public ISimpleIoc Register<TInterface>(Type classType, bool createInstanceImmediately) where TInterface : class
+        {
             lock (_syncLock)
             {
                 var interfaceType = typeof(TInterface);
-                var classType = typeof(TClass);
+                if (!interfaceType.IsAssignableFrom(classType))
+                    throw new ArgumentException("classType is not inhert for TInterface");
 
                 if (_typeMapInfos.ContainsKey(interfaceType))
                 {
@@ -206,8 +232,6 @@ namespace LawSoft.Ioc
                 return this;
             }
         }
-
-
 
         #endregion [ Register ]
 
@@ -250,7 +274,7 @@ namespace LawSoft.Ioc
                     _constructorInfos.Remove(resolveTo);
                 }
             }
-        } 
+        }
         #endregion
 
         #region [ IsRegistered ]
@@ -326,6 +350,24 @@ namespace LawSoft.Ioc
         }
 
 
+        /// <summary>
+        /// Make an object within the container without register, based on the runtime Type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>An instance of TContract or null if not found</returns>
+        public T GetInstanceWithoutRegister<T>() where T : class
+        {
+            return MakeInstance<T>();
+        }
+
+        /// <summary>
+        /// Make an object within the container without register, based on the runtime Type
+        /// </summary>
+        /// <returns>An instance of TContract or null if not found</returns>
+        public object GetInstanceWithoutRegister(Type serviceType)
+        {
+            return MakeInstance(serviceType);
+        }
         #endregion
 
 
@@ -489,6 +531,11 @@ namespace LawSoft.Ioc
         {
             var serviceType = typeof(TClass);
 
+            return (TClass)MakeInstance(serviceType);
+        }
+
+        private object MakeInstance(Type serviceType)
+        {
             var constructor = _constructorInfos.ContainsKey(serviceType)
                                   ? _constructorInfos[serviceType]
                                   : GetConstructorInfo(serviceType);
@@ -497,7 +544,7 @@ namespace LawSoft.Ioc
 
             if (parameterInfos.Length == 0)
             {
-                return (TClass)constructor.Invoke(_emptyArguments);
+                return constructor.Invoke(_emptyArguments);
             }
 
             var parameters = new object[parameterInfos.Length];
@@ -507,10 +554,8 @@ namespace LawSoft.Ioc
                 parameters[parameterInfo.Position] = DoGetService(parameterInfo.ParameterType);
             }
 
-            return (TClass)constructor.Invoke(parameters);
+            return constructor.Invoke(parameters);
         }
-
-
         #endregion
 
 
